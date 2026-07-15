@@ -119,6 +119,12 @@ body {
     align-items: center;
     gap: 12px;
     margin-bottom: 48px;
+    cursor: pointer;
+    transition: opacity var(--transition-fast);
+}
+
+.sidebar-brand:hover {
+    opacity: 0.85;
 }
 
 .brand-icon {

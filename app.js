@@ -82,6 +82,7 @@ const elements = {
     // Navigation
     navItems: document.querySelectorAll('.nav-item'),
     sidebar: document.querySelector('.sidebar'),
+    sidebarBrand: document.querySelector('.sidebar-brand'),
     mobileToggle: document.querySelector('.mobile-toggle'),
     currentViewTitle: document.getElementById('current-view-title'),
     appOverlay: document.getElementById('app-overlay'),
@@ -954,6 +955,13 @@ function initEventListeners() {
             switchView(target);
         });
     });
+
+    // Sidebar brand click to return to dashboard
+    if (elements.sidebarBrand) {
+        elements.sidebarBrand.addEventListener('click', () => {
+            switchView('dashboard-view');
+        });
+    }
 
     // Mobile Sidebar Toggle
     elements.mobileToggle.addEventListener('click', () => {
