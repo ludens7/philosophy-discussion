@@ -1,0 +1,21 @@
+{
+  "short_name": "사유와 토론",
+  "name": "지혜의 서재 | 철학 & 문학 토론 워크스페이스",
+  "icons": [
+    {
+      "src": "assets/images/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "assets/images/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait"
+}

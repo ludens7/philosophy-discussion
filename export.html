@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Export Data</title>
+</head>
+<body>
+    <div id="status">Exporting...</div>
+    <script src="data.js"></script>
+    <script>
+        try {
+            const dataStr = JSON.stringify(valuesData, null, 4);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            document.getElementById('status').innerText = 'SUCCESS';
+        } catch (e) {
+            document.getElementById('status').innerText = 'ERROR: ' + e.message;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지혜의 서재 | 철학 & 문학 토론 워크스페이스</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css?v=202607151645">
+    <!-- PWA meta tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="사유와 토론">
+    <link rel="apple-touch-icon" href="assets/images/icon-192.png">
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <i data-lucide="book-open" class="brand-icon"></i>
+                <div class="brand-text">
+                    <h1>지혜의 서재</h1>
+                    <span>Library of Wisdom</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-target="dashboard-view">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>가치 대시보드</span>
+                </button>
+                <button class="nav-item" data-target="debate-board-view" id="nav-debate-board">
+                    <i data-lucide="edit-3"></i>
+                    <span>토론 준비실</span>
+                </button>
+                <button class="nav-item" data-target="reflection-journal-view">
+                    <i data-lucide="archive"></i>
+                    <span>생각 보관함</span>
+                    <span class="badge" id="journal-count">0</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <p>사유는 삶을 더 투명하게 만든다.</p>
+                <small>© 2026 Library of Wisdom</small>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Topbar (Header) -->
+            <header class="top-bar">
+                <button class="mobile-toggle" aria-label="메뉴 열기">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div class="breadcrumb">
+                    <span id="current-view-title">가치 대시보드</span>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="btn btn-icon" id="collected-quotes-toggle" title="수집한 구절 보기">
+                        <i data-lucide="quote"></i>
+                        <span class="quote-badge" id="quote-count">0</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- 공통 헤더: 웰컴 헤더 (상시 노출 및 클릭 시 홈 이동) -->
+            <div class="welcome-header" id="common-welcome-header" title="대시보드로 돌아가기">
+                <h2>
+                    <i data-lucide="compass" style="margin-right: 8px; vertical-align: middle; color: var(--accent-gold); width: 22px; height: 22px;"></i>
+                    사유와 토론을 위한 공간
+                    <button id="pwa-install-btn" class="pwa-install-btn" style="display: none;">
+                        <i data-lucide="download" style="width: 14px; height: 14px; margin-right: 4px; vertical-align: middle;"></i>홈화면 추가
+                    </button>
+                </h2>
+                <p>우리 삶을 구성하는 근본적인 가치들을 탐색해 보세요. 각 카드에서 인류의 지적 유산인 철학 텍스트와 고전 문학의 한 장면을 만나실 수 있습니다.</p>
+            </div>
+
+            <!-- Dashboard View -->
+            <section id="dashboard-view" class="view-panel active">
+
+                <div class="dashboard-controls">
+                    <div class="search-filter">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="dashboard-search-input" placeholder="감정이나 가치명으로 검색... (예: 불안, 피로)">
+                    </div>
+                    <div class="category-tabs" id="category-tabs">
+                        <button class="cat-tab active" data-cat="all">
+                            <i data-lucide="layout-grid"></i> 전체
+                        </button>
+                        <button class="cat-tab" data-cat="negative">
+                            <i data-lucide="cloud-rain"></i> 부정적 감정
+                        </button>
+                        <button class="cat-tab" data-cat="positive">
+                            <i data-lucide="sun"></i> 긍정적 감정
+                        </button>
+                        <button class="cat-tab" data-cat="values">
+                            <i data-lucide="star"></i> 가치와 덕목
+                        </button>
+                        <button class="cat-tab" data-cat="existential">
+                            <i data-lucide="infinity"></i> 실존적 개념
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="cards-grid" id="values-grid">
+                    <!-- Cards will be dynamically inserted here via JS -->
+                </div>
+            </section>
+
+            <!-- Concept Explorer View -->
+            <section id="concept-explorer-view" class="view-panel">
+                <div class="explorer-header">
+                    <button class="btn-back" id="btn-back-to-dashboard">
+                        <i data-lucide="arrow-left"></i> 대시보드로 돌아가기
+                    </button>
+                    <div class="concept-meta">
+                        <span class="concept-tag" id="concept-eng-title">JUSTICE</span>
+                        <h2 id="concept-title">정의</h2>
+                        <p class="concept-quote" id="concept-philosophical-question">"무엇이 정당하며, 그 정의는 누구의 이익을 위한 것인가?"</p>
+                    </div>
+                </div>
+
+                <div class="explorer-body">
+                    <!-- Material Panel (Left/Center) -->
+                    <div class="material-panel">
+                        <!-- Navigation Tabs -->
+                        <div class="tabs-nav">
+                            <button class="tab-btn active" data-tab="philosophy-tab">
+                                <i data-lucide="compass"></i> 철학적 사색
+                            </button>
+                            <button class="tab-btn" data-tab="literature-tab">
+                                <i data-lucide="scroll"></i> 문학적 울림
+                            </button>
+                            <button class="tab-btn" data-tab="prompts-tab">
+                                <i data-lucide="message-square"></i> 토론의 광장
+                            </button>
+                        </div>
+
+                        <!-- Tab Contents -->
+                        <div class="tab-content active" id="philosophy-tab">
+                            <div class="perspective-nav" id="phil-perspectives-nav">
+                                <!-- Dynamic buttons populated via JS (e.g. 관점 A: 플라톤) -->
+                            </div>
+                            <article class="reading-material" id="phil-reading-material">
+                                <div class="material-source">
+                                    <span class="author" id="phil-author">플라톤</span>
+                                    <span class="source-title" id="phil-source">『국가』</span>
+                                </div>
+                                <div class="passage-box">
+                                    <i class="quote-start-icon">“</i>
+                                    <blockquote id="phil-passage">
+                                        "정의는 강자의 이익에 다름 아닙니다. 각 정체는 자신들의 이익에 부합하도록 법률을 제정하며, 이를 위반하는 자들을 불법을 저지른 자, 즉 부정의한 자라 칭하고 처벌합니다..."
+                                    </blockquote>
+                                </div>
+                                <div class="collect-action">
+                                    <button class="btn btn-secondary btn-sm" id="btn-collect-phil">
+                                        <i data-lucide="plus"></i> 이 구절을 토론 자료로 수집
+                                    </button>
+                                </div>
+                                <div class="commentary-box">
+                                    <h4>텍스트 해석 & 맥락</h4>
+                                    <p id="phil-commentary">
+                                        소크라테스와 트라시마코스의 불꽃튀는 대화 중 일부입니다. 트라시마코스는 정의가 지배 권력의 생존 전략에 불과하다고 보며 날카로운 현실주의를 드러냅니다. 이에 맞서 소크라테스는 정의란 각 부분이 제 역할을 수행하여 내면의 영혼과 공동체가 조화를 이루는 상태임을 논증합니다.
+                                    </p>
+                                </div>
+                                <div class="concepts-box" id="phil-concepts-container">
+                                    <h4>사상 & 주요 개념</h4>
+                                    <p id="phil-concepts"></p>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="tab-content" id="literature-tab">
+                            <article class="reading-material">
+                                <div class="material-source">
+                                    <span class="author" id="lit-author">빅토르 위고</span>
+                                    <span class="source-title" id="lit-source">『레 미제라블』</span>
+                                </div>
+                                <div class="passage-box">
+                                    <i class="quote-start-icon">“</i>
+                                    <blockquote id="lit-passage">
+                                        "내가 침묵하면 샹마티유라는 죄 없는 노인이 나 대신 감옥에 갈 것이다. 하지만 내가 나 자신을 드러낸다면, 내가 일구어놓은 공장의 수많은 노동자들이 뿔뿔이 흩어지고 굶주릴 것이다. 한 사람의 억울한 영혼을 구하는 것이 정의인가, 수많은 이들의 생존을 책임지는 것이 정의인가?"
+                                    </blockquote>
+                                </div>
+                                <div class="collect-action">
+                                    <button class="btn btn-secondary btn-sm" id="btn-collect-lit">
+                                        <i data-lucide="plus"></i> 이 구절을 토론 자료로 수집
+                                    </button>
+                                </div>
+                                <div class="commentary-box">
+                                    <h4>텍스트 해석 & 맥락</h4>
+                                    <p id="lit-commentary">
+                                        시장이 되어 사람들의 존경을 받던 장발장(마들렌 시장)이 자신으로 오해받아 평생 노역형에 처해질 처지에 놓인 샹마티유의 소식을 듣고 겪는 도덕적 딜레마입니다. 개인의 절대적 도덕 의무와 공공의 이익(공동체적 책임)이 정면으로 부딪히는 위대한 문학적 순간입니다.
+                                    </p>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="tab-content" id="prompts-tab">
+                            <div class="prompts-container">
+                                <h3>토론을 위한 화두</h3>
+                                <p class="prompts-intro">이 텍스트들은 다음 질문들과 연결됩니다. 발제문을 누르면 해당 내용이 토론 준비실로 복사됩니다.</p>
+                                <div class="prompts-list" id="prompts-list">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Prep Panel (Right) -->
+                    <div class="quick-prep-panel">
+                        <div class="quick-prep-header">
+                            <h3><i data-lucide="pen-tool"></i> 실시간 사유 메모</h3>
+                            <span class="save-status" id="quick-save-status">자동 저장됨</span>
+                        </div>
+                        <p class="quick-prep-desc">이 가치에 대한 나만의 단상과 토론 아이디어를 자유롭게 메모하세요. 브라우저에 즉시 저장됩니다.</p>
+                        <div class="form-group">
+                            <textarea id="quick-note-textarea" placeholder="여기에 사유한 바를 적어보세요... (예: 샹마티유의 일은 도덕적 의무로서 장발장이 반드시 고백해야 한다고 본다...)"></textarea>
+                        </div>
+                        <button class="btn btn-primary btn-block" id="btn-go-to-debate-board">
+                            <i data-lucide="arrow-right-left"></i> 이 가치로 토론 개요서 작성하기
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Debate Board View (Debate Outline Builder) -->
+            <section id="debate-board-view" class="view-panel">
+                <div class="view-header">
+                    <h2>토론 준비실 (Debate Outline Workspace)</h2>
+                    <p>수집한 고전 구절들과 자신의 철학적 사유를 결합하여 체계적인 토론 개요서(Debate Outline)를 구축하는 공간입니다.</p>
+                </div>
+
+                <div class="debate-board-layout">
+                    <!-- Editor Panel (Left) -->
+                    <div class="debate-editor-card">
+                        <div class="editor-header-fields">
+                            <div class="form-group inline-group">
+                                <label for="debate-topic-select">선택 가치</label>
+                                <select id="debate-topic-select">
+                                    <!-- Options populated via JS -->
+                                </select>
+                            </div>
+                            <div class="form-group inline-group">
+                                <label for="debate-title-input">토론 주제</label>
+                                <input type="text" id="debate-title-input" placeholder="예: 소수의 권리를 희생하는 정책은 정의로운가?">
+                            </div>
+                        </div>
+
+                        <!-- Outline Building Form -->
+                        <div class="outline-form">
+                            <!-- Section: My Claim -->
+                            <div class="outline-section">
+                                <div class="section-title">
+                                    <span class="step-num">1</span>
+                                    <h4>나의 핵심 주장 (Thesis / Claim)</h4>
+                                </div>
+                                <p class="section-desc">토론에서 견지할 나의 궁극적인 결론이나 입장을 한 문장으로 명료하게 정리합니다.</p>
+                                <textarea id="outline-thesis" placeholder="예: 어떤 경우에도 무고한 한 개인의 삶을 다수의 행복을 위한 수단으로 삼는 것은 부정의하므로 반대한다."></textarea>
+                            </div>
+
+                            <!-- Section: Arguments -->
+                            <div class="outline-section">
+                                <div class="section-title">
+                                    <span class="step-num">2</span>
+                                    <h4>핵심 논거 및 수집 자료 (Arguments & Evidence)</h4>
+                                </div>
+                                <p class="section-desc">주장을 뒷받침할 2~3가지 논리적 근거를 설명합니다. 수집한 고전 텍스트를 인용하면 설득력이 높아집니다.</p>
+                                <div class="quote-helper-area">
+                                    <small>💡 아래 '수집된 구절'에서 원하는 구절을 복사하거나 참고하여 작성하세요.</small>
+                                </div>
+                                <textarea id="outline-arguments" placeholder="예:
+1. 칸트적 도덕률에 따르면 인간은 수단이 아닌 목적으로 대우받아야 한다.
+2. 레 미제라블에서 장발장이 장기간 죄책감에 시달린 것 또한 개인의 도덕적 결벽이 아닌 인간 본연의 정의 관념에 기인한 것이다."></textarea>
+                            </div>
+
+                            <!-- Section: Rebuttals -->
+                            <div class="outline-section">
+                                <div class="section-title">
+                                    <span class="step-num">3</span>
+                                    <h4>상대방의 예상 반론 및 반박 (Counterarguments & Rebuttal)</h4>
+                                </div>
+                                <p class="section-desc">상대방이 제기할 수 있는 합리적인 비판(예: 공익의 손실)을 예상하고, 이에 대해 어떻게 재반박할 것인지 기술합니다.</p>
+                                <textarea id="outline-rebuttals" placeholder="예:
+- 예상 반론: 장발장의 공장이 문을 닫으면 수많은 무고한 노동자가 실직한다. 이는 더 큰 부정의를 낳을 수 있다.
+- 나의 반박: 사회적 편익이 정의의 기준이 된다면, 법률과 정의는 결국 힘의 논리에 굴복하는 결과를 낳는다. '절차적 공정성'이 훼손되면 공동체의 근간이 무너진다."></textarea>
+                            </div>
+
+                            <!-- Section: Conclusion -->
+                            <div class="outline-section">
+                                <div class="section-title">
+                                    <span class="step-num">4</span>
+                                    <h4>종합 및 시사점 (Synthesis / Conclusion)</h4>
+                                </div>
+                                <p class="section-desc">논의를 종합하며 이 토론이 현대 사회(혹은 개인의 삶)에 던지는 철학적 시사점을 결론으로 맺습니다.</p>
+                                <textarea id="outline-conclusion" placeholder="예: 정의는 정량적인 계산법(공동체 행복의 총합)에 머물지 않고 인간 고유의 엄숙한 의무와 존엄에 닿아 있음을 확인해야 한다."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Action Controls -->
+                        <div class="editor-actions">
+                            <button class="btn btn-secondary" id="btn-reset-outline">
+                                <i data-lucide="rotate-ccw"></i> 입력 초기화
+                            </button>
+                            <button class="btn btn-primary" id="btn-save-outline">
+                                <i data-lucide="save"></i> 생각 보관함에 저장
+                            </button>
+                            <button class="btn btn-success" id="btn-export-markdown">
+                                <i data-lucide="download"></i> 마크다운으로 내보내기 (.md)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quote Workspace Panel (Right) -->
+                    <aside class="quotes-workspace">
+                        <div class="quotes-workspace-header">
+                            <h3><i data-lucide="quote"></i> 수집된 구절 보관함</h3>
+                            <button class="btn btn-icon btn-sm" id="btn-clear-quotes" title="모든 수집 구절 삭제">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                        <p class="workspace-desc">텍스트 탐색 중 수집한 구절 목록입니다. 클릭하면 내용이 클립보드에 복사되어 왼쪽 개요서 작성 시 쉽게 붙여넣을 수 있습니다.</p>
+                        
+                        <div class="quotes-list-box" id="workspace-quotes-list">
+                            <!-- Collected quotes list will be rendered here -->
+                            <div class="empty-quote-state">
+                                <i data-lucide="info"></i>
+                                <p>수집한 구절이 없습니다.<br>대시보드에서 가치를 선택하고 구절을 수집해보세요.</p>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- Reflection Journal View (Archive) -->
+            <section id="reflection-journal-view" class="view-panel">
+                <div class="view-header">
+                    <h2>생각 보관함 (Reflection Archive)</h2>
+                    <p>지금까지 작성하여 저장한 철학적 사유와 토론 개요서 목록입니다. 기록된 사유들은 브라우저 로컬 저장소에 안전하게 유지됩니다.</p>
+                </div>
+
+                <div class="journal-controls">
+                    <div class="search-filter">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="journal-search-input" placeholder="제목이나 가치명으로 검색...">
+                    </div>
+                </div>
+
+                <div class="journal-grid" id="journal-grid-container">
+                    <!-- Saved journals will be rendered here dynamically -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Slide-over panel for Collected Quotes (Mobile/Quick Access) -->
+    <div class="quotes-slideout" id="quotes-slideout">
+        <div class="slideout-header">
+            <h3><i data-lucide="quote"></i> 수집한 구절 목록</h3>
+            <button class="btn btn-icon" id="btn-close-slideout">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="slideout-content" id="slideout-quotes-list">
+            <!-- Rendered list of quotes -->
+        </div>
+    </div>
+    <div class="overlay" id="app-overlay"></div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="app-toast">구절이 성공적으로 수집되었습니다.</div>
+
+    <!-- App JavaScript -->
+    <script src="data.js?v=202607151645"></script>
+    <script src="app.js?v=202607151645"></script>
+
+    <!-- PWA 설명서 모달 -->
+    <div id="pwa-modal" class="pwa-modal-backdrop" style="display: none;">
+        <div class="pwa-modal-card">
+            <div class="pwa-modal-header">
+                <h4><i data-lucide="download" style="width: 18px; height: 18px; margin-right: 6px; vertical-align: middle; color: var(--accent-gold);"></i>홈화면 추가 안내</h4>
+                <button id="pwa-modal-close" class="pwa-modal-close-btn">&times;</button>
+            </div>
+            <div class="pwa-modal-body">
+                <p><strong>안드로이드 (크롬/삼성):</strong><br>주소창 오른쪽 (⬇️) 설치 버튼 또는 메뉴의 <strong>[홈 화면에 추가]</strong>를 터치하세요.</p>
+                <p><strong>아이폰 (iOS 사파리):</strong><br>하단 툴바의 <strong>공유(공유하기)</strong> 아이콘 ➡️ 스크롤하여 <strong>[홈 화면에 추가]</strong>를 터치하세요.</p>
+                <p><strong>데스크톱 PC (크롬/엣지):</strong><br>주소창 오른쪽 끝의 <strong>[설치(🖥️+⬇)]</strong> 아이콘을 클릭하세요.</p>
+            </div>
+            <div class="pwa-modal-footer">
+                <button id="pwa-modal-btn-action" class="btn btn-pwa-close">알겠습니다</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Service Worker Auto-Update Script -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => {
+                        console.log('SW Registered:', reg.scope);
+                        // 새 서비스 워커 배포 감지 시 즉시 오토 리로드
+                        reg.onupdatefound = () => {
+                            const installingWorker = reg.installing;
+                            if (installingWorker) {
+                                installingWorker.onstatechange = () => {
+                                    if (installingWorker.state === 'installed') {
+                                        if (navigator.serviceWorker.controller) {
+                                            console.log('New SW version found, hard reloading browser.');
+                                            window.location.reload();
+                                        }
+                                    }
+                                };
+                            }
+                        };
+                    })
+                    .catch(err => console.log('SW Registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
